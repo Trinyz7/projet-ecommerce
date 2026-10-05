@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Environnement local et secrets
+.venv/
+.env
+
+# Bases locales et journaux
+*.sqlite3
+*.log
