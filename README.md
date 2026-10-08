@@ -11,9 +11,12 @@ Projet de base de données e-commerce avec PostgreSQL.
 - `tests/` : tests Python d'intégrité et de contenu.
 - `config.py` : configuration PostgreSQL chargée depuis les variables d'environnement.
 
-## Installation et configuration (PowerShell)
+## Installation
 
-Depuis la racine du dépôt, créez/activez un environnement virtuel et installez les dépendances :
+Installez et démarrez PostgreSQL. Depuis la racine du dépôt, créez un environnement
+virtuel et installez les dépendances.
+
+### Windows (PowerShell)
 
 ```powershell
 py -m venv .venv
@@ -21,24 +24,43 @@ py -m venv .venv
 pip install -r requirements.txt
 ```
 
-Copiez le fichier de configuration exemple puis renseignez les paramètres de connexion :
+### macOS (Terminal)
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Configuration PostgreSQL
+
+Copiez le fichier d'exemple.
+
+Windows (PowerShell) :
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Configurez `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` et `DB_PASSWORD` dans `.env`.
-L'utilisateur PostgreSQL doit pouvoir se connecter à la base système `postgres` et
-avoir le droit de créer une base (`CREATEDB`). Le serveur doit aussi autoriser cette
-connexion dans sa configuration `pg_hba.conf`.
+macOS :
+
+```bash
+cp .env.example .env
+```
+
+Dans `.env`, renseignez `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` et `DB_PASSWORD`.
+L'utilisateur PostgreSQL doit pouvoir se connecter à la base `postgres` et créer une
+base (`CREATEDB`). Le serveur doit autoriser sa connexion dans `pg_hba.conf`.
 
 ## Créer et remplir la base
 
-Lancez depuis la racine du dépôt :
+Depuis la racine du dépôt, lancez :
 
 ```powershell
 python setup_database.py
 ```
+
+Sur macOS, utilisez la même commande dans le terminal avec l'environnement virtuel activé.
 
 Le script crée la base indiquée par `DB_NAME`, exécute `sql/create_schema.sql`, puis
 charge `sql/seed_ecommerce.sql`. Il s'arrête si la base existe déjà afin d'éviter
@@ -58,6 +80,9 @@ Lancez les tests automatisés :
 ```powershell
 pytest
 ```
+
+Sur macOS, ces commandes sont identiques. Activez d'abord l'environnement virtuel avec
+`source .venv/bin/activate`.
 
 Pour exécuter toutes les requêtes d'analyse, utilisez `psql` :
 
