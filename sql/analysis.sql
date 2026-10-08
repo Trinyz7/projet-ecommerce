@@ -47,9 +47,9 @@ ORDER BY chiffre_affaires DESC;
 
 -- Exercise 15.A
 SELECT 'client' AS table_name, COUNT(*) AS total_rows FROM client
-UNION ALL SELECT 'produit', COUNT(*) FROM produit
-UNION ALL SELECT 'commande', COUNT(*) FROM commande
-UNION ALL SELECT 'ligne_commande', COUNT(*) FROM ligne_commande;
+UNION ALL SELECT 'produit', COUNT(*) AS total_rows FROM produit
+UNION ALL SELECT 'commande', COUNT(*) AS total_rows FROM commande
+UNION ALL SELECT 'ligne_commande', COUNT(*) AS total_rows FROM ligne_commande;
 
 SELECT table_name, column_name, data_type
 FROM information_schema.columns
@@ -74,6 +74,8 @@ SELECT
 FROM commande cmd
 JOIN ligne_commande lc ON lc.commande_id = cmd.id
 WHERE cmd.statut <> 'annulée';
+
+SELECT ROUND(100*SUM(CASE WHEN statut = 'annulée' THEN 1 ELSE 0 END)/COUNT(*),2) AS taux_annulation FROM commande;
 
 -- EXERCICE 10 — PANIER MOYEN
 SELECT
