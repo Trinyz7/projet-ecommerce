@@ -79,22 +79,14 @@ SELECT ROUND(100*SUM(CASE WHEN statut = 'annulée' THEN 1 ELSE 0 END)/COUNT(*),2
 
 -- EXERCICE 10 — PANIER MOYEN
 SELECT
-    ROUND(
-        SUM(lc.quantite * lc.prix_unitaire)
-        / NULLIF(COUNT(DISTINCT cmd.id), 0),
-        2
-    ) AS panier_moyen
+    SUM(lc.quantite * lc.prix_unitaire) / COUNT(DISTINCT cmd.id) AS panier_moyen
 FROM commande cmd
 JOIN ligne_commande lc ON cmd.id = lc.commande_id
 WHERE cmd.statut <> 'annulée';
 
 SELECT
     DATE_TRUNC('month', cmd.date_commande) AS mois,
-    ROUND(
-        SUM(lc.quantite * lc.prix_unitaire)
-        / NULLIF(COUNT(DISTINCT cmd.id), 0),
-        2
-    ) AS panier_moyen
+    SUM(lc.quantite * lc.prix_unitaire) / COUNT(DISTINCT cmd.id) AS panier_moyen
 FROM commande cmd
 JOIN ligne_commande lc ON cmd.id = lc.commande_id
 WHERE cmd.statut <> 'annulée'
@@ -104,9 +96,7 @@ ORDER BY mois;
 -- EXERCICE 11 — CATEGORISER LES COMMANDES
 SELECT
     cmd.id AS id_commande,
-    cmd.date_commande,
-    cmd.statut,
-    ROUND(SUM(lc.quantite * lc.prix_unitaire), 2) AS montant_total,
+    SUM(lc.quantite * lc.prix_unitaire) AS montant_total,
     CASE
         WHEN SUM(lc.quantite * lc.prix_unitaire) < 500 THEN 'Petit panier'
         WHEN SUM(lc.quantite * lc.prix_unitaire) < 1500 THEN 'Panier moyen'
@@ -114,15 +104,14 @@ SELECT
     END AS categorie_panier
 FROM commande cmd
 JOIN ligne_commande lc ON cmd.id = lc.commande_id
-GROUP BY cmd.id, cmd.date_commande, cmd.statut
+WHERE cmd.statut <> 'annulée'
+GROUP BY cmd.id
 ORDER BY cmd.id;
 
 -- EXERCICE 12 — ANALYSE TEMPORELLE
 SELECT
     DATE_TRUNC('month', cmd.date_commande) AS mois,
-    ROUND(SUM(lc.quantite * lc.prix_unitaire), 2) AS chiffre_affaires,
-    SUM(lc.quantite) AS quantite_vendue,
-    COUNT(DISTINCT cmd.id) AS nombre_commandes
+    SUM(lc.quantite * lc.prix_unitaire) AS chiffre_affaires
 FROM commande cmd
 JOIN ligne_commande lc ON cmd.id = lc.commande_id
 WHERE cmd.statut <> 'annulée'
