@@ -6,21 +6,21 @@ def test_colonnes_commande(conn):
         WHERE table_name = 'commande'
     """)
     colonnes = {ligne[0] for ligne in cursor.fetchall()}
-    attendues = {"id_client", "date_cmd", "statut"}
+    attendues = {"client_id", "date_commande", "statut"}
     assert attendues <= colonnes, f"Colonnes manquantes : {attendues - colonnes}"
 
 
 def test_commande_a_un_client_existant(compter):
     nb = compter("""
         SELECT COUNT(*) FROM commande c
-        LEFT JOIN client cl ON cl.id_client = c.id_client
-        WHERE cl.id_client IS NULL
+        LEFT JOIN client cl ON cl.id = c.client_id
+        WHERE cl.id IS NULL
     """)
     assert nb == 0, f"{nb} commande(s) sans client valide"
 
 
 def test_date_commande_renseignee(compter):
-    nb = compter("SELECT COUNT(*) FROM commande WHERE date_cmd IS NULL")
+    nb = compter("SELECT COUNT(*) FROM commande WHERE date_commande IS NULL")
     assert nb == 0, f"{nb} commande(s) sans date"
 
 
@@ -35,7 +35,7 @@ def test_statuts_autorises(compter):
 def test_un_client_peut_avoir_plusieurs_commandes(compter):
     nb = compter("""
         SELECT COUNT(*) FROM (
-            SELECT id_client FROM commande GROUP BY id_client HAVING COUNT(*) > 1
+            SELECT client_id FROM commande GROUP BY client_id HAVING COUNT(*) > 1
         ) multi
     """)
     assert nb > 0, "Aucun client n'a plusieurs commandes"
@@ -44,8 +44,8 @@ def test_un_client_peut_avoir_plusieurs_commandes(compter):
 def test_toute_commande_a_au_moins_une_ligne(compter):
     nb = compter("""
         SELECT COUNT(*) FROM commande c
-        LEFT JOIN ligne_commande l ON l.id_commande = c.id_commande
-        WHERE l.id_commande IS NULL
+        LEFT JOIN ligne_commande l ON l.commande_id = c.id
+        WHERE l.commande_id IS NULL
     """)
     assert nb == 0, f"{nb} commande(s) sans ligne"
 
@@ -54,7 +54,7 @@ def test_commande_apres_inscription(compter):
     
     nb = compter("""
         SELECT COUNT(*) FROM commande c
-        JOIN client cl ON cl.id_client = c.id_client
-        WHERE c.date_cmd < cl.date_creation
+        JOIN client cl ON cl.id = c.client_id
+        WHERE c.date_commande < cl.date_inscription
     """)
     assert nb == 0, f"{nb} commande(s) antérieure(s) à la création du client"
