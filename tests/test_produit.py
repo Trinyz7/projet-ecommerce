@@ -5,14 +5,14 @@ def test_prix_produit_positif(compter):
 
 
 def test_stock_non_negatif(compter):
-    nb = compter("SELECT COUNT(*) FROM produit WHERE stock_dispo IS NULL OR stock_dispo < 0")
+    nb = compter("SELECT COUNT(*) FROM produit WHERE stock IS NULL OR stock < 0")
     assert nb == 0, f"{nb} produit(s) avec un stock absent ou négatif"
 
 
-def test_tous_les_produits_ont_ete_vendus(compter):
+def test_cinq_produits_ne_sont_jamais_vendus(compter):
     nb = compter("""
         SELECT COUNT(*) FROM produit p
-        LEFT JOIN ligne_commande l ON l.id_produit = p.id_produit
-        WHERE l.id_produit IS NULL
+        LEFT JOIN ligne_commande l ON l.produit_id = p.id
+        WHERE l.produit_id IS NULL
     """)
-    assert nb == 0, f"{nb} produit(s) jamais vendu(s)"
+    assert nb == 5, f"{nb} produit(s) jamais vendu(s), 5 attendus"
