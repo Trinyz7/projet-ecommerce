@@ -79,14 +79,14 @@ SELECT ROUND(100*SUM(CASE WHEN statut = 'annulée' THEN 1 ELSE 0 END)/COUNT(*),2
 
 -- EXERCICE 10 — PANIER MOYEN
 SELECT
-    SUM(lc.quantite * lc.prix_unitaire) / COUNT(DISTINCT cmd.id) AS panier_moyen
+    SUM(lc.quantite * lc.prix_unitaire) / NULLIF(COUNT(DISTINCT cmd.id), 0) AS panier_moyen
 FROM commande cmd
 JOIN ligne_commande lc ON cmd.id = lc.commande_id
 WHERE cmd.statut <> 'annulée';
 
 SELECT
     DATE_TRUNC('month', cmd.date_commande) AS mois,
-    SUM(lc.quantite * lc.prix_unitaire) / COUNT(DISTINCT cmd.id) AS panier_moyen
+    SUM(lc.quantite * lc.prix_unitaire) / NULLIF(COUNT(DISTINCT cmd.id), 0) AS panier_moyen
 FROM commande cmd
 JOIN ligne_commande lc ON cmd.id = lc.commande_id
 WHERE cmd.statut <> 'annulée'
